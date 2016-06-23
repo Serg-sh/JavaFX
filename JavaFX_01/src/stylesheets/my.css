@@ -1,0 +1,9 @@
+.button {
+    -fx-font-size: 10pt;
+    -fx-color: green;
+}
+.label {
+    -fx-background-color: aqua;
+    -fx-font-size: 10pt;
+    -fx-font-style: italic;
+}
