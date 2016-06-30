@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import org.controlsfx.control.textfield.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -9,17 +10,17 @@
    <children>
       <HBox maxHeight="30.0" prefHeight="30.0" prefWidth="200.0">
          <children>
-            <Button fx:id="btnAdd" minWidth="69.0" mnemonicParsing="false" onAction="#ectionButtonPressed" text="%key.add">
+            <Button fx:id="btnAdd" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#ectionButtonPressed" text="%key.add">
                <HBox.margin>
                   <Insets bottom="10.0" right="10.0" top="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="btnEdit" minWidth="69.0" mnemonicParsing="false" onAction="#ectionButtonPressed" text="%key.edit">
+            <Button fx:id="btnEdit" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#ectionButtonPressed" text="%key.edit">
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="btnDelete" minWidth="69.0" mnemonicParsing="false" onAction="#ectionButtonPressed" text="%key.delete">
+            <Button fx:id="btnDelete" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#ectionButtonPressed" text="%key.delete">
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </HBox.margin>
@@ -31,8 +32,8 @@
       </HBox>
       <AnchorPane maxHeight="30.0" prefHeight="26.0" prefWidth="244.0">
          <children>
-            <TextField fx:id="txtFSearch" layoutX="-1.0" layoutY="1.0" prefHeight="25.0" prefWidth="183.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="62.0" />
-            <Button fx:id="btnSearch" layoutX="229.0" layoutY="1.0" mnemonicParsing="false" text="%key.search" AnchorPane.rightAnchor="0.0" />
+            <Button fx:id="btnSearch" layoutX="229.0" layoutY="1.0" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#actionSearch" text="%key.search" AnchorPane.rightAnchor="0.0" />
+            <CustomTextField fx:id="txtSearch" layoutX="10.0" layoutY="1.0" prefHeight="25.0" prefWidth="190.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="75.0" />
          </children>
          <VBox.margin>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

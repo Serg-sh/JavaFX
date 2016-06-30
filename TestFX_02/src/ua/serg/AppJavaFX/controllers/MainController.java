@@ -1,6 +1,9 @@
 package ua.serg.AppJavaFX.controllers;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,10 +17,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
 import ua.serg.AppJavaFX.interfaces.impls.CollectionAddresBook;
 import ua.serg.AppJavaFX.objects.Person;
+import ua.serg.AppJavaFX.utils.DialogManager;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -38,7 +45,7 @@ public class MainController {
     @FXML
     private Button btnSearch;
     @FXML
-    private TextField txtFSearch;
+    private CustomTextField txtSearch;
     @FXML
     private TableView tableAddresView;
     @FXML
@@ -52,12 +59,7 @@ public class MainController {
     private FXMLLoader fxmlLoader = new FXMLLoader();
     private EditDialogController editDialogController;
     private Stage editDialogStage;
-
-
-
-
-
-
+    private ObservableList<Person> backupList;
 
 
     @FXML
@@ -68,12 +70,24 @@ public class MainController {
         initLisners();
         fillData();
         initLoader();
+        setupClearButtonField(txtSearch);
 
+    }
 
+    private void setupClearButtonField(CustomTextField customTextField) {
+        try {
+            Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+            m.setAccessible(true);
+            m.invoke(null, customTextField, customTextField.rightProperty());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void fillData() {
         addresBookImpl.fillTestData();
+        backupList = FXCollections.observableArrayList();
+        backupList.addAll(addresBookImpl.getPersonList());
         tableAddresView.setItems(addresBookImpl.getPersonList());
     }
 
@@ -81,9 +95,11 @@ public class MainController {
         try {
             fxmlLoader.setLocation(getClass().getResource("..//fxml/editForm.fxml"));
             fxmlLoader.setResources(ResourceBundle.getBundle("ua/serg/AppJavaFX/bundles/Locale", new Locale("en")));
-            fxmlEdit=fxmlLoader.load();
+            fxmlEdit = fxmlLoader.load();
             editDialogController = fxmlLoader.getController();
-        } catch (IOException e){ e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initLisners() {
@@ -95,7 +111,7 @@ public class MainController {
         tableAddresView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (event.getClickCount() == 2){
+                if (event.getClickCount() == 2) {
                     editDialogController.setPerson((Person) tableAddresView.getSelectionModel().getSelectedItem());
                     showDialog();
                 }
@@ -103,44 +119,55 @@ public class MainController {
         });
     }
 
-    private void updateCountLabel(){
+    private void updateCountLabel() {
         countLabel.setText("" + (addresBookImpl.getPersonList().size()));
     }
 
     public void ectionButtonPressed(ActionEvent actionEvent) {
 
         Object source = actionEvent.getSource();
-        if (!(source instanceof Button)){return;}
+        if (!(source instanceof Button)) {
+            return;
+        }
 
         Button clickedButton = (Button) source;
         Person selectedPerson = (Person) tableAddresView.getSelectionModel().getSelectedItem();
         Window parentWindow = ((Node) actionEvent.getSource()).getScene().getWindow();
-        if (selectedPerson == null){
-            selectedPerson = new Person("","");
-        }
-        editDialogController.setPerson(selectedPerson);
 
-        switch (clickedButton.getId()){
+//        editDialogController.setPerson(selectedPerson);
+
+        switch (clickedButton.getId()) {
             case "btnAdd":
-                editDialogController.setPerson(new Person("",""));
+                editDialogController.setPerson(new Person("", ""));
                 showDialog();
                 addresBookImpl.add(editDialogController.getPerson());
                 break;
 
             case "btnEdit":
-                if (tableAddresView.getSelectionModel().getSelectedItem() != null) {
-                    editDialogController.setPerson((Person) tableAddresView.getSelectionModel().getSelectedItem());
-                    showDialog();
-                    break;
-                }else break;
+                if (!personIsSelected(selectedPerson)) {
+                    return;
+                }
+                editDialogController.setPerson(selectedPerson);
+                showDialog();
+                break;
 
 
             case "btnDelete":
-                addresBookImpl.delete((Person) tableAddresView.getSelectionModel().getSelectedItem());
+                if (!personIsSelected(selectedPerson)) {
+                    return;
+                }
+                addresBookImpl.delete(selectedPerson);
                 break;
         }
 
 
+    }
+    private boolean personIsSelected (Person selectedPerson){
+        if(selectedPerson == null){
+            DialogManager.showInfoDialog(fxmlLoader.getResources().getString("key.error"), fxmlLoader.getResources().getString("key.select.person"));
+            return false;
+        }
+        return true;
     }
 
     private void showDialog() {
@@ -157,4 +184,16 @@ public class MainController {
         }
         editDialogStage.showAndWait();
     }
+    public void actionSearch(ActionEvent actionEvent) {
+
+        addresBookImpl.getPersonList().clear();
+
+        for (Person person : backupList) {
+            if (person.getFio().toLowerCase().contains(txtSearch.getText().toLowerCase()) || person.getTel().toLowerCase().contains(txtSearch.getText().toLowerCase())) {
+                addresBookImpl.getPersonList().add(person);
+            }
+        }
+    }
+
+
 }

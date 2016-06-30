@@ -7,7 +7,7 @@ import ua.serg.AppJavaFX.interfaces.AddresBook;
 import ua.serg.AppJavaFX.objects.Person;
 import javafx.collections.FXCollections;
 
-import java.util.ArrayList;
+
 
 /**
  * Created by shpak on 24.06.2016.
